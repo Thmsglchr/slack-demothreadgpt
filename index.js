@@ -212,18 +212,14 @@ async function generateDiscussion(body, context) {
 
 // Calls generateDiscussion and sends the generated conversation to the specified channel
 async function generateAndPostConversation(context, body, channelId, topic, company, numMessages, initialMessageTs) {
-  console.log("Debug > generateAndPostConversation was triggered...");
   try {
-    console.log("Debug > generateAndPostConversation's try...");
     const participants = addedUsers
       .map((user) => `${user.name} (${user.position} at ${company})`)
       .join(", ");
 
-    console.log("Debug > Create prompt");
     const prompt = `Generate a conversation between ${participants} about the topic "${topic}". The conversation should have ${numMessages} messages.`;
 
     // Generate the conversation and update the initial message
-    console.log("Debug > Generate the conversation and update the initial message");
     const result = await openai.createCompletion({
       model: "text-davinci-002",
       prompt,
@@ -232,7 +228,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Extract messages from the generated text
-    console.log("Debug > Extract messages from the generated text");
     const messages = result.data.choices[0].text
     .split("\n")
     .filter((line) => line.trim().length > 0)
@@ -240,9 +235,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     .slice(0, numMessages);
   
     // Update the initial message with the generated conversation
-    console.log("Debug > Update the initial message with the generated conversation");
     const conversationText = messages.join("\n");
-    console.log("Debug > Delay 1");
     await delay(1001); // Wait for 1 second before chat.postMessage
     await app.client.chat.update({
       token: context.botToken,
@@ -252,8 +245,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Delete the initial message
-    console.log("Debug > Delete the initial message");
-    console.log("Debug > Delay 2");
     await delay(1001); // Wait for 1 second before chat.postMessage
     await app.client.chat.delete({
       token: context.botToken,
@@ -262,8 +253,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Post messages in a thread with custom username and avatar
-    console.log("Debug > Post messages in a thread with custom username and avatar");
-    console.log("Debug > Delay 3");
     await delay(1001); // Wait for 1 second before chat.postMessage
     const parentMessage = await app.client.chat.postMessage({
       token: context.botToken,
@@ -274,7 +263,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     for (let i = 1; i < messages.length; i++) {
-      console.log("Debug > Delay 4");
       await delay(1001); // Wait for 1 second between each message
       await app.client.chat.postMessage({
         token: context.botToken,
