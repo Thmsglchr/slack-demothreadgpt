@@ -22,7 +22,7 @@ const limiter = rateLimit({
 });
 
 // Apply the rate limiter to the chat.postMessage route
-app.client.post('/chat.postMessage', limiter);
+app.use('/chat.postMessage', limiter);
 
 // Store added users
 let addedUsers = [];
