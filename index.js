@@ -212,6 +212,7 @@ async function generateDiscussion(body, context) {
 
 // Calls generateDiscussion and sends the generated conversation to the specified channel
 async function generateAndPostConversation(context, body, channelId, topic, company, numMessages, initialMessageTs) {
+  console.log("generateAndPostConversation was triggered...");
   try {
     const participants = addedUsers
       .map((user) => `${user.name} (${user.position} at ${company})`)
@@ -281,7 +282,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     console.error('Error:', error.message);
     console.error('Full error object:', error);
   }
-  
+
   // Add a delay of 1 second before returning
   await delay(1000);
 }
