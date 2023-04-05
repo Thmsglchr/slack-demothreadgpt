@@ -236,7 +236,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
   
     // Update the initial message with the generated conversation
     const conversationText = messages.join("\n");
-    await delay(1001); // Wait for 1 second before chat.postMessage
     await app.client.chat.update({
       token: context.botToken,
       channel: channelId,
@@ -245,7 +244,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Delete the initial message
-    await delay(1001); // Wait for 1 second before chat.postMessage
     await app.client.chat.delete({
       token: context.botToken,
       channel: channelId,
