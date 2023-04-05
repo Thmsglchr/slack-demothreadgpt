@@ -221,6 +221,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     const prompt = `Generate a conversation between ${participants} about the topic "${topic}". The conversation should have ${numMessages} messages.`;
 
     // Generate the conversation and update the initial message
+    console.log("Generate the conversation and update the initial message");
     const result = await openai.createCompletion({
       model: "text-davinci-002",
       prompt,
@@ -229,6 +230,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Extract messages from the generated text
+    console.log("Extract messages from the generated text");
     const messages = result.data.choices[0].text
     .split("\n")
     .filter((line) => line.trim().length > 0)
@@ -236,6 +238,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     .slice(0, numMessages);
   
     // Update the initial message with the generated conversation
+    console.log("Update the initial message with the generated conversation");
     const conversationText = messages.join("\n");
     console.log("Delay 1");
     await delay(1001); // Wait for 1 second before chat.postMessage
@@ -247,6 +250,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Delete the initial message
+    console.log("Delete the initial message");
     console.log("Delay 2");
     await delay(1001); // Wait for 1 second before chat.postMessage
     await app.client.chat.delete({
@@ -256,6 +260,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Post messages in a thread with custom username and avatar
+    console.log("Post messages in a thread with custom username and avatar");
     console.log("Delay 3");
     await delay(1001); // Wait for 1 second before chat.postMessage
     const parentMessage = await app.client.chat.postMessage({
