@@ -13,6 +13,17 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
+const rateLimit = require("express-rate-limit");
+
+// Rate limiter to allow only one message per second
+const limiter = rateLimit({
+  windowMs: 1001, // 1.001 second
+  max: 1, // limit each IP to 1 request per windowMs
+});
+
+// Apply the rate limiter to the chat.postMessage route
+app.post('/chat.postMessage', limiter);
+
 // Store added users
 let addedUsers = [];
 
