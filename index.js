@@ -214,6 +214,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     const prompt = `Generate a conversation between ${participants} about the topic "${topic}". The conversation should have ${numMessages} messages.`;
 
     // Post an initial message to inform users that the conversation is being generated
+    console.log("Delay 1");
     await delay(1001); // Wait for 1 second between each message
     const initialMessage = await app.client.chat.postMessage({
       token: context.botToken,
@@ -253,6 +254,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Post messages in a thread with custom username and avatar
+    console.log("Delay 2");
     await delay(1001); // Wait for 1 second before chat.postMessage
     const parentMessage = await app.client.chat.postMessage({
       token: context.botToken,
@@ -263,6 +265,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     for (let i = 1; i < messages.length; i++) {
+      console.log("Delay 3");
       await delay(1001); // Wait for 1 second between each message
       await app.client.chat.postMessage({
         token: context.botToken,
