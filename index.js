@@ -220,13 +220,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
 
     const prompt = `Generate a conversation between ${participants} about the topic "${topic}". The conversation should have ${numMessages} messages.`;
 
-    // Post an initial message to inform users that the conversation is being generated
-    const initialMessage = await app.client.chat.postMessage({
-      token: context.botToken,
-      channel: channelId,
-      text: "Generating conversation...",
-    });
-
     // Generate the conversation and update the initial message
     const result = await openai.createCompletion({
       model: "text-davinci-002",
