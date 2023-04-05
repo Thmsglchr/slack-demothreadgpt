@@ -191,6 +191,13 @@ async function generateDiscussion(body, context) {
   
   const channelId = body.view.state.values.channel_block.channel_select.selected_channel;
 
+  // Post an initial message to inform users that the conversation is being generated
+  const initialMessage = await app.client.chat.postMessage({
+    token: context.botToken,
+    channel: channelId,
+    text: "Generating conversation...",
+  });
+
   // Generate the conversation and update the initial message
   await generateAndPostConversation(
     context,
@@ -212,15 +219,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
       .join(", ");
 
     const prompt = `Generate a conversation between ${participants} about the topic "${topic}". The conversation should have ${numMessages} messages.`;
-
-    // Post an initial message to inform users that the conversation is being generated
-    console.log("Delay 1");
-    await delay(1001); // Wait for 1 second between each message
-    const initialMessage = await app.client.chat.postMessage({
-      token: context.botToken,
-      channel: channelId,
-      text: "Generating conversation...",
-    });
 
     // Generate the conversation and update the initial message
     const result = await openai.createCompletion({
