@@ -21,9 +21,6 @@ const limiter = rateLimit({
   max: 1, // limit each IP to 1 request per windowMs
 });
 
-// Apply the rate limiter to the chat.postMessage route
-app.post('/chat.postMessage', limiter);
-
 // Store added users
 let addedUsers = [];
 
