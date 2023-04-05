@@ -281,6 +281,9 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     console.error('Error:', error.message);
     console.error('Full error object:', error);
   }
+  
+  // Add a delay of 1 second before returning
+  await delay(1000);
 }
 
 // Triggered when the app home is opened, updates the home view for the user=
