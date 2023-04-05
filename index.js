@@ -13,19 +13,15 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
-const rateLimit = require("express-rate-limit");
-
-// Rate limiter to allow only one message per second
-const limiter = rateLimit({
-  windowMs: 1001, // 1.001 second
-  max: 1, // limit each IP to 1 request per windowMs
-});
-
-// Apply the rate limiter to the chat.postMessage route
-app.use('/chat.postMessage', limiter);
-
 // Store added users
 let addedUsers = [];
+
+// Adds a delay to avoid hitting Slack's rate limits
+// Slack limits the number of messages that can be sent per second to prevent spam and ensure the smooth functioning of workspaces
+// By adding a delay, we ensure that we don't exceed the rate limit
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 // Returns an array of block objects for the home view
 function buildHomeBlocks() {
@@ -223,7 +219,14 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
 
     const prompt = `Generate a conversation between ${participants} about the topic "${topic}". The conversation should have ${numMessages} messages.`;
 
-    // Call the OpenAI API to generate the discussion
+    // Post an initial message to inform users that the conversation is being generated
+    const initialMessage = await app.client.chat.postMessage({
+      token: context.botToken,
+      channel: channelId,
+      text: "Generating conversation...",
+    });
+
+    // Generate the conversation and update the initial message
     const result = await openai.createCompletion({
       model: "text-davinci-002",
       prompt,
@@ -264,6 +267,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     for (let i = 1; i < messages.length; i++) {
+      await delay(1001); // Wait for 1 second between each message
       await app.client.chat.postMessage({
         token: context.botToken,
         channel: channelId,
