@@ -191,13 +191,6 @@ async function generateDiscussion(body, context) {
   
   const channelId = body.view.state.values.channel_block.channel_select.selected_channel;
 
-  // Post an initial message to inform users that the conversation is being generated
-  const initialMessage = await app.client.chat.postMessage({
-    token: context.botToken,
-    channel: channelId,
-    text: "Generating conversation...",
-  });
-
   // Generate the conversation and update the initial message
   await generateAndPostConversation(
     context,
@@ -219,6 +212,14 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
       .join(", ");
 
     const prompt = `Generate a conversation between ${participants} about the topic "${topic}". The conversation should have ${numMessages} messages.`;
+
+    // Post an initial message to inform users that the conversation is being generated
+    await delay(1001); // Wait for 1 second between each message
+    const initialMessage = await app.client.chat.postMessage({
+      token: context.botToken,
+      channel: channelId,
+      text: "Generating conversation...",
+    });
 
     // Generate the conversation and update the initial message
     const result = await openai.createCompletion({
@@ -252,6 +253,7 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     });
 
     // Post messages in a thread with custom username and avatar
+    await delay(1001); // Wait for 1 second before chat.postMessage
     const parentMessage = await app.client.chat.postMessage({
       token: context.botToken,
       channel: channelId,
@@ -275,9 +277,6 @@ async function generateAndPostConversation(context, body, channelId, topic, comp
     console.error('Error:', error.message);
     console.error('Full error object:', error);
   }
-
-  // Add a delay of 1 second before returning
-  await delay(1000);
 }
 
 // Triggered when the app home is opened, updates the home view for the user=
@@ -394,19 +393,6 @@ app.action(/delete_user_.*/, async ({ ack, body, context, action }) => {
 app.action("generate_discussion", async ({ ack, body, context }) => {
   await ack();
   await generateDiscussion(body, context);  
-});
-
-// Listener for when the app is mentioned in a channel
-app.event("app_mention", async ({ event, context }) => {
-  try {
-    await app.client.chat.postMessage({
-      token: context.botToken,
-      channel: event.channel,
-      text: `Hello, <@${event.user}>! I'm here to help.`
-    });
-  } catch (error) {
-    console.error(`Error responding to app_mention: ${error}`);
-  }
 });
 
 // Error handling
